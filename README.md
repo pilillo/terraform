@@ -23,6 +23,7 @@ Do not forget, in case you already didn't, to ignore the state files:
 .terraform
 *.tfstate
 *.tfstate.backup
+*.lock.hcl
 ```
 
 ## Test-1
