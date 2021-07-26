@@ -150,3 +150,60 @@ datalake_arn = "arn:aws:s3:::pilillo-datalake"
 region = "eu-west-1"
 state_arn = "arn:aws:s3:::pilillo-tf-state"
 ```
+
+## Cleanup
+
+Destroy all resources with `terraform destroy`.
+Mind that the destroy may fail since S3 was defined with prevent_destroy.
+Since there is no destroy all but one, we can do the [following](https://stackoverflow.com/questions/55265203/terraform-delete-all-resources-except-one):
+
+```bash
+# list all resources
+terraform state list
+
+# remove that resource you don't want to destroy
+# you can add more to be excluded if required
+terraform state rm <resource_to_be_deleted> 
+
+# destroy the whole stack except above excluded resource(s)
+terraform destroy 
+```
+
+which will destroy everything but the s3 state:
+
+```bash
+❯ terraform state list
+aws_athena_database.datalake
+aws_iam_role.firehose_role
+aws_kinesis_firehose_delivery_stream.test_stream
+aws_kinesis_stream.input_stream
+aws_s3_bucket.datalake
+aws_s3_bucket.terraform_state
+❯ terraform state rm aws_s3_bucket.terraform_state
+Removed aws_s3_bucket.terraform_state
+Successfully removed 1 resource instance(s).
+❯ terraform destroy
+aws_kinesis_stream.input_stream: Refreshing state... [id=arn:aws:kinesis:eu-west-1:196393882643:stream/terraform-kinesis-test]
+aws_s3_bucket.datalake: Refreshing state... [id=pilillo-datalake]
+aws_iam_role.firehose_role: Refreshing state... [id=firehose_test_role]
+aws_athena_database.datalake: Refreshing state... [id=myfirstdb]
+aws_kinesis_firehose_delivery_stream.test_stream: Refreshing state... [id=arn:aws:firehose:eu-west-1:196393882643:deliverystream/terraform-kinesis-firehose-test-stream]
+
+...
+
+aws_athena_database.datalake: Destroying... [id=myfirstdb]
+aws_kinesis_firehose_delivery_stream.test_stream: Destroying... [id=arn:aws:firehose:eu-west-1:196393882643:deliverystream/terraform-kinesis-firehose-test-stream]
+aws_athena_database.datalake: Destruction complete after 4s
+aws_kinesis_firehose_delivery_stream.test_stream: Still destroying... [id=arn:aws:firehose:eu-west-1:196393882643...terraform-kinesis-firehose-test-stream, 10s elapsed]
+aws_kinesis_firehose_delivery_stream.test_stream: Destruction complete after 14s
+aws_kinesis_stream.input_stream: Destroying... [id=arn:aws:kinesis:eu-west-1:196393882643:stream/terraform-kinesis-test]
+aws_s3_bucket.datalake: Destroying... [id=pilillo-datalake]
+aws_iam_role.firehose_role: Destroying... [id=firehose_test_role]
+aws_iam_role.firehose_role: Destruction complete after 1s
+aws_s3_bucket.datalake: Destruction complete after 5s
+aws_kinesis_stream.input_stream: Still destroying... [id=arn:aws:kinesis:eu-west-1:196393882643:stream/terraform-kinesis-test, 10s elapsed]
+aws_kinesis_stream.input_stream: Destruction complete after 10s
+
+Destroy complete! Resources: 5 destroyed.
+
+```
