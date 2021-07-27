@@ -210,7 +210,15 @@ Destroy complete! Resources: 5 destroyed.
 ```
 
 ## Test-5
-Example to deploy a lambda function written in Python. For the sake of simplicity, we start from a clean `main.tf` file instead of bringing forward the one resulting from *Test-4*. The lambda simply logs the event payload.
+Example to deploy a lambda function written in Python. For the sake of simplicity, we start from a clean `main.tf` file instead of bringing forward the one resulting from *Test-4*.  
+
+The lambda simply logs the event payload:
+```python
+import json
+
+def handler(event, context):
+    print("Received event: " + json.dumps(event, indent=2))
+```
 
 It can be invoked using the aws cli (see `aws lambda invoke help`):
 
