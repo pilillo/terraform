@@ -208,3 +208,30 @@ aws_kinesis_stream.input_stream: Destruction complete after 10s
 Destroy complete! Resources: 5 destroyed.
 
 ```
+
+## Test-5
+Example to deploy a lambda function written in Python. For the sake of simplicity, we start from a clean `main.tf` file instead of bringing forward the one resulting from *Test-4*. The lambda simply logs the event payload.
+
+It can be invoked using the aws cli (see `aws lambda invoke help`):
+
+```bash
+aws lambda invoke --region eu-west-1 \
+--function-name myfirstlambda \
+--invocation-type RequestResponse --log-type Tail \
+--cli-binary-format raw-in-base64-out \
+--payload '{"key1":"value1", "key2":"value2", "key3":"value3"}' \
+response.json | \
+jq .LogResult | sed 's/"//g' | base64 --decode
+```
+
+with the lambda printing out the provided payload:
+```bash
+START RequestId: 6001f62c-91d5-4baa-90d5-f22f12e5585e Version: $LATEST
+Received event: {
+  "key1": "value1",
+  "key2": "value2",
+  "key3": "value3"
+}
+END RequestId: 6001f62c-91d5-4baa-90d5-f22f12e5585e
+REPORT RequestId: 6001f62c-91d5-4baa-90d5-f22f12e5585e  Duration: 0.26 ms       Billed Duration: 1 ms   Memory Size: 128 MB     Max Memory Used: 43 MB  Init Duration: 1.18 ms
+```
