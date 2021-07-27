@@ -220,7 +220,8 @@ def handler(event, context):
     print("Received event: " + json.dumps(event, indent=2))
 ```
 
-It can be invoked using the aws cli (see `aws lambda invoke help`):
+Just zip it using the command in `zip_src.sh` and apply the configuration with `terraform apply`.
+The lambda can be invoked using the aws cli (see `aws lambda invoke help`):
 
 ```bash
 aws lambda invoke --region eu-west-1 \
