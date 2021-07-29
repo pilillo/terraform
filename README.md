@@ -31,7 +31,7 @@ Do not forget, in case you already didn't, to ignore the state files:
 ## Test-1
 Example file, no changes to the infrastructure are to be applied.
 The Terraform state is saved to a local *.tfstate file in JSON format. This, even when committed, may lead to inconsistencies across team members. Also, secrets may be contained in the state file and access to this information is thus unmanaged.
-Another solution is to set up a CICD pipeline as the sole applier of Terraform configuration and use a persistent volume to store the state.
+Another solution is to set up a CICD pipeline as the sole applier of Terraform configuration and use a persistent volume to store the state. Along with state sharing, [state locking](https://www.terraform.io/docs/language/state/locking.html) is a potential issue leading to inconsistencies. 
 
 ## Test-2
 Example of using S3 as a shared state storage, where state files can be shared, versioned and encrypted.
