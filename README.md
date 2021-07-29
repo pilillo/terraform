@@ -2,11 +2,13 @@
 
 ## Introduction
 Terraform consists of:
-* [Resources](https://www.terraform.io/docs/language/resources/index.html) to be managed;
+* [Resources](https://www.terraform.io/docs/language/resources/index.html) to be managed; orthogonally to those, meta-arguments can be defined, such as [depends-on](https://www.terraform.io/docs/language/meta-arguments/depends_on.html), [count](https://www.terraform.io/docs/language/meta-arguments/count.html) to create multiple instances of the same resource type, [lifecycle](https://www.terraform.io/docs/language/meta-arguments/lifecycle.html) to define Terraform-related behavior such as upon update or deletion; 
 * [Modules](https://www.terraform.io/docs/language/modules/index.html) - to group multiple resources used together and favour code reuse;
 * [Providers](https://www.terraform.io/docs/language/providers/index.html) - managers of specific resource types; providers are indexed on the [Terraform Registry](https://registry.terraform.io/browse/providers) and can come from either Hashicorp, verified organizations or community members; No longer maintained ones are listed as "Archived". For instance, the [AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest) is maintained directly by Hashicorp. The documentation is available [here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs) and the Github repo [here](https://github.com/hashicorp/terraform-provider-aws).
 * [Input Variables](https://www.terraform.io/docs/language/values/variables.html) - used to abstract and parametrize providers;
 * [Outputs](https://www.terraform.io/docs/language/values/outputs.html) - specifying values to export from a module; Terraform prints those specified output values to stdout when applying the configuration; You can alternatively explicitly query those values using the `terraform output` command, which is optionally provided the output name (e.g. `terraform output region`) to act as a resource query;
+* [Data Sources](https://www.terraform.io/docs/language/data-sources/index.html) - definying a reference to information defined outside of Terraform;
+* [Modules](https://www.terraform.io/docs/language/modules/index.html) - grouping a set of resources into a reusable named component that can be be published and maintaned as a whole;
 
 ## Pre-requisites
  1. Sign up for an AWS account, create a new non-root user and assign some policies  
