@@ -141,8 +141,8 @@ terraform {
 ```
 You are now ready to go with S3 as state backend.
 
-Mind that variable are not allowed within the backend block.
-A solution is to use partial configuration, i.e. to move those backend parameters that are environment specific to an external file and provide them via a `-backend-config mybackendconf.hcl` command line argument when calling terraform init.
+Mind that variables are not allowed within the backend block.
+A solution is to use partial configuration, i.e. to move those backend parameters that are environment specific to an external file and provide them via a `-backend-config mybackendconf.hcl` command line argument when calling terraform init. Another possibility to manage a multi-environment state is to use terraform [workspaces](https://www.terraform.io/docs/language/state/workspaces.html). When omitted, terraform starts with a `default` workspace (run `terraform workspace show` to see the one you are currently in) and additional ones can be created using `terraform workspace new <workspace-name>` having a brand new state file. You can list workspaces using `terraform workspace list` and select one using `terraform workspace select <workspace-name>`. If you check your S3 bucket, an `env` folder is stored along with the one indicated in the `backend.s3.key`. This contains the terraform state of each created workspace.
 
 ## Test-3
 Example creating an S3 bucket and using it from Athena. This also shows how to define dependencies between resources.
