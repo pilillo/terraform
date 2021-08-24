@@ -73,7 +73,7 @@ You can firstly create the S3 bucket by commenting the *backend* configuration. 
 Why S3? Terraform is actually compatible with multiple backends, including its own Terraform Cloud. 
 However, a file storage like GCS, S3 and Azure Storage will be just fine. Specifically, S3:
 * it's managed and designed for 99.99% availability
-* supports server-side encryption using AES-256 and SSL during interaction
+* supports server-side encryption using AES-256 (super important since the tf state also contains secrets) and SSL during interaction
 * supports versioning so rolling back to an older state is possible
 * supports locking via DynamoDB
 
