@@ -141,6 +141,9 @@ terraform {
 ```
 You are now ready to go with S3 as state backend.
 
+Mind that variable are not allowed within the backend block.
+A solution is to use partial configuration, i.e. to move those backend parameters that are environment specific to an external file and provide them via a `-backend-config mybackendconf.hcl` command line argument when calling terraform init.
+
 ## Test-3
 Example creating an S3 bucket and using it from Athena. This also shows how to define dependencies between resources.
 
