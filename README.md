@@ -69,6 +69,77 @@ You can firstly create the S3 bucket by commenting the *backend* configuration. 
   rerun this command to reinitialize your working directory. If you forget, other
   commands will detect it and remind you to do so if necessary.
   ```
+  
+Why S3? Terraform is actually compatible with multiple backends, including its own Terraform Cloud. 
+However, a file storage like GCS, S3 and Azure Storage will be just fine. Specifically, S3:
+* it's managed and designed for 99.99% availability
+* supports server-side encryption using AES-256 and SSL during interaction
+* supports versioning so rolling back to an older state is possible
+* supports locking via DynamoDB
+
+For instance, you can create an S3 bucket with enabled versioning and encryption as follows:
+```hcl
+provider "aws" {
+    profile = var.aws["profile"]
+    region = var.aws["region"]
+}
+
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "pilillo-tf-state"
+  
+  versioning {
+    enabled = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+  
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+```
+
+You can similarly add a dynamo DB table to keep the locks:
+```hcl
+resource "aws_dynamodb_table" "terraform_lock" {
+  name = "pilillo-tf-lock"
+  hash_key = "LockID"
+  
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+```
+
+We can then configure terraform to use those resources to keep its state:
+```hcl
+terraform {
+    required_providers {
+        aws = {
+            source  = "hashicorp/aws"
+            version = "~> 3.27"
+        }
+    }
+    required_version = ">= 0.14.9"
+
+    backend "s3" {
+        bucket = "pilillo-tf-state"
+        region = "eu-west-1"
+        key="global/terraform.tfstate"
+        dynamodb_table = "pilillo-tf-lock"
+        encrypt = true
+    }
+
+}
+```
+You are now ready to go with S3 as state backend.
 
 ## Test-3
 Example creating an S3 bucket and using it from Athena. This also shows how to define dependencies between resources.
