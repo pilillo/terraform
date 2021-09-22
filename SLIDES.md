@@ -104,9 +104,9 @@ Portable IaC in the era of multi/hybrid cloud
 ---
 
 # Tutorials
-1. Warm-up (no new resources added), local state file
-2. Shared-state on S3
-3. S3 bucket and Athena
-4. Kinesis stream to S3 bucket
-5. Python lambda function
-6. [Python lambda function on localstack](./README.md/#Test-6)
+1. [Warm-up (no new resources added), local state file](https://github.com/pilillo/terraform/blob/master/README.md#test-1)
+2. [Shared-state on S3](https://github.com/pilillo/terraform/blob/master/README.md#test-2)
+3. [S3 bucket and Athena](https://github.com/pilillo/terraform/blob/master/README.md#test-3)
+4. [Kinesis stream to S3 bucket](https://github.com/pilillo/terraform/blob/master/README.md#test-4)
+5. [Python lambda function](https://github.com/pilillo/terraform/blob/master/README.md#test-5)
+6. [Python lambda function on localstack](https://github.com/pilillo/terraform/blob/master/README.md#test-6)
