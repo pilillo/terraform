@@ -247,3 +247,78 @@ Received event: {
 END RequestId: 6001f62c-91d5-4baa-90d5-f22f12e5585e
 REPORT RequestId: 6001f62c-91d5-4baa-90d5-f22f12e5585e  Duration: 0.26 ms       Billed Duration: 1 ms   Memory Size: 128 MB     Max Memory Used: 43 MB  Init Duration: 1.18 ms
 ```
+
+## Test-6
+
+### Configure the CLI for Localstack
+
+You can configure fake aws credentials to be used for localstack, as explained [here](https://github.com/localstack/localstack/blob/master/README.md#setting-up-local-region-and-credentials-to-run-localstack), as follows:
+
+```bash
+$ aws configure --profile localstack
+AWS Access Key ID [None]: fake
+AWS Secret Access Key [None]: fake
+Default region name [None]: us-east-1
+Default output format [None]: 
+```
+
+which will append the following to your ~/.aws/credentials file:
+```
+[localstack]
+aws_access_key_id = fake
+aws_secret_access_key = fake
+```
+
+or alternatively just use the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables:
+
+export AWS_ACCESS_KEY_ID=fake
+export AWS_SECRET_ACCESS_KEY=fake
+
+### Invoke the lambda function
+
+```
+aws lambda invoke --region eu-west-1 \
+--function-name myfirstlambda \
+--invocation-type RequestResponse --log-type Tail \
+--cli-binary-format raw-in-base64-out \
+--endpoint-url=http://localhost:4566 \
+--payload '{"key1":"value1", "key2":"value2", "key3":"value3"}' \
+response.json | \
+jq .LogResult | sed 's/"//g' | base64 --decode
+```
+
+Looking at the localstack log:
+```log
+localstack_main | 2021-09-22T14:49:55:DEBUG:localstack.services.awslambda.lambda_executors: Creating docker-reuse Lambda container localstack_lambda_arn_aws_lambda_eu-west-1_000000000000_function_myfirstlambda from image lambci/lambda:20191117-python3.6
+localstack_main | 2021-09-22T14:49:55:DEBUG:localstack.utils.docker: Creating container with image lambci/lambda:20191117-python3.6, command 'None', volumes None, env vars {'AWS_ACCESS_KEY_ID': 'test', 'AWS_SECRET_ACCESS_KEY': 'test', 'AWS_REGION': 'eu-west-1', 'LOCALSTACK_HOSTNAME': '172.17.0.2', 'AWS_ENDPOINT_URL': 'http://172.17.0.2:4566', 'EDGE_PORT': 4566, '_HANDLER': 'lambda.handler', 'AWS_LAMBDA_FUNCTION_TIMEOUT': '3', 'AWS_LAMBDA_FUNCTION_NAME': 'myfirstlambda', 'AWS_LAMBDA_FUNCTION_VERSION': '$LATEST', 'AWS_LAMBDA_FUNCTION_INVOKED_ARN': 'arn:aws:lambda:eu-west-1:000000000000:function:myfirstlambda', 'AWS_LAMBDA_COGNITO_IDENTITY': '{}', '_LAMBDA_SERVER_PORT': '5000', 'HOSTNAME': '9649705c54f4'}
+localstack_main | 2021-09-22T14:49:55:DEBUG:localstack.utils.docker: Pulling image: lambci/lambda:20191117-python3.6
+localstack_main | 2021-09-22T14:49:55:DEBUG:localstack.utils.docker: Repository: lambci/lambda Tag: 20191117-python3.6
+...
+localstack_main | 2021-09-22T14:50:53:DEBUG:localstack.utils.docker: Executing command in container localstack_lambda_arn_aws_lambda_eu-west-1_000000000000_function_myfirstlambda: ['/var/lang/bin/python3.6', '/var/runtime/awslambda/bootstrap.py', 'lambda.handler']
+localstack_main | 2021-09-22T14:50:53:DEBUG:localstack.services.awslambda.lambda_executors: Lambda arn:aws:lambda:eu-west-1:000000000000:function:myfirstlambda result / log output:
+localstack_main | null
+localstack_main | > START RequestId: 1961d636-734b-40c3-9a83-5170a1a45f2d Version: $LATEST
+localstack_main | > Received event: {
+localstack_main | >   "key1": "value1",
+localstack_main | >   "key2": "value2",
+localstack_main | >   "key3": "value3"
+localstack_main | > }
+localstack_main | > END RequestId: 1961d636-734b-40c3-9a83-5170a1a45f2d
+localstack_main | > REPORT RequestId: 1961d636-734b-40c3-9a83-5170a1a45f2d Duration: 0 ms Billed Duration: 100 ms Memory Size: 1536 MB Max Memory Used: 19 MB
+localstack_main | 2021-09-22T14:51:47:DEBUG:localstack.services.awslambda.lambda_executors: Checking if there are idle containers ...
+```
+
+and the AWS cli will return after printing the following:
+
+```
+START RequestId: 1961d636-734b-40c3-9a83-5170a1a45f2d Version: $LATEST
+Received event: {
+  "key1": "value1",
+  "key2": "value2",
+  "key3": "value3"
+}
+END RequestId: 1961d636-734b-40c3-9a83-5170a1a45f2d
+REPORT RequestId: 1961d636-734b-40c3-9a83-5170a1a45f2d Duration: 0 ms Billed Duration: 100 ms Memory Size: 1536 MB Max Memory Used: 19 MB% 
+```
+
+which is the same as we had in the previous tutorial.

@@ -19,6 +19,21 @@ terraform {
 provider "aws" {
   //profile = var.aws["profile"]
   region = var.aws["region"]
+  //access_key = "123"
+  //secret_key = "xyz"
+
+  skip_credentials_validation = true
+  skip_requesting_account_id = true
+  skip_metadata_api_check = true
+  
+  s3_force_path_style = true
+  # use localstack as target
+  endpoints {
+    iam = "http://localhost:4566"
+    s3 = "http://localhost:4566"
+    lambda = "http://localhost:4566"
+    kinesis = "http://localhost:4566"
+  }
 }
 
 resource "aws_iam_role" "lambda_exec_role" {
@@ -42,8 +57,9 @@ resource "aws_iam_role" "lambda_exec_role" {
 EOF
 }
 
-// https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function
-resource "aws_lambda_function" "test5_lambda" {
+
+
+resource "aws_lambda_function" "test6_lambda" {
   role             = aws_iam_role.lambda_exec_role.arn
   handler          = var.lambda["handler"]
   runtime          = var.lambda["runtime"]

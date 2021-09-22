@@ -5,7 +5,6 @@ variable "aws" {
   }
 }
 
-
 variable "lambda" {
 
   default = {
