@@ -94,6 +94,20 @@ Portable IaC in the era of multi/hybrid cloud
   * **Solution 2:** use workspaces (conceptually similar to git branching), each environment has a different managed state ending up in a different subfolder;
 ---
 
+# In practice
+* Terraform often used through [Terragrunt](https://terragrunt.gruntwork.io/docs/features/keep-your-terraform-code-dry/) (thin wrapper around Terraform)
+* following DRY principles
+  * [Multi-env configuration without replicating code](https://terragrunt.gruntwork.io/docs/features/keep-your-terraform-code-dry/#remote-terraform-configurations)
+    * using separation in modules and variables `terragrunt.hcl` files
+  * [Remote state (backend) configuration](https://terragrunt.gruntwork.io/docs/features/keep-your-remote-state-configuration-dry/)
+    * using `terragrunt.hcl` files to define state configuration in a remote state block
+    * **automagically** creating the state store (S3, GCP) and the lock store (DynamoDB)
+  * [run all modules](https://terragrunt.gruntwork.io/docs/features/execute-terraform-commands-on-multiple-modules-at-once/) in subfolders in parallel
+  * working with [multiple AWS accounts](https://terragrunt.gruntwork.io/docs/features/work-with-multiple-aws-accounts/) by specifying IAM roles
+
+
+---
+
 # Setup
 
 ---
