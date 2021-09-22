@@ -69,6 +69,80 @@ You can firstly create the S3 bucket by commenting the *backend* configuration. 
   rerun this command to reinitialize your working directory. If you forget, other
   commands will detect it and remind you to do so if necessary.
   ```
+  
+Why S3? Terraform is actually compatible with multiple backends, including its own Terraform Cloud. 
+However, a file storage like GCS, S3 and Azure Storage will be just fine. Specifically, S3:
+* it's managed and designed for 99.99% availability
+* supports server-side encryption using AES-256 (super important since the tf state also contains secrets) and SSL during interaction
+* supports versioning so rolling back to an older state is possible
+* supports locking via DynamoDB
+
+For instance, you can create an S3 bucket with enabled versioning and encryption as follows:
+```hcl
+provider "aws" {
+    profile = var.aws["profile"]
+    region = var.aws["region"]
+}
+
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "pilillo-tf-state"
+  
+  versioning {
+    enabled = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+  
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+```
+
+You can similarly add a dynamo DB table to keep the locks:
+```hcl
+resource "aws_dynamodb_table" "terraform_lock" {
+  name = "pilillo-tf-lock"
+  hash_key = "LockID"
+  
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+```
+
+We can then configure terraform to use those resources to keep its state:
+```hcl
+terraform {
+    required_providers {
+        aws = {
+            source  = "hashicorp/aws"
+            version = "~> 3.27"
+        }
+    }
+    required_version = ">= 0.14.9"
+
+    backend "s3" {
+        bucket = "pilillo-tf-state"
+        region = "eu-west-1"
+        key="global/terraform.tfstate"
+        dynamodb_table = "pilillo-tf-lock"
+        encrypt = true
+    }
+
+}
+```
+You are now ready to go with S3 as state backend.
+
+Mind that variables are not allowed within the backend block.
+A solution is to use partial configuration, i.e. to move those backend parameters that are environment specific to an external file and provide them via a `-backend-config mybackendconf.hcl` command line argument when calling terraform init. Another possibility to manage a multi-environment state is to use terraform [workspaces](https://www.terraform.io/docs/language/state/workspaces.html). When omitted, terraform starts with a `default` workspace (run `terraform workspace show` to see the one you are currently in) and additional ones can be created using `terraform workspace new <workspace-name>` having a brand new state file. You can list workspaces using `terraform workspace list` and select one using `terraform workspace select <workspace-name>`. If you check your S3 bucket, an `env` folder is stored along with the one indicated in the `backend.s3.key`. This contains the terraform state of each created workspace. This is seamless for the user, who simply switches workspace. To achieve full environment isolation, an explicit env-specific directory shall be used to store terraform files, as well as a specific backend to store its state and lock.
 
 ## Test-3
 Example creating an S3 bucket and using it from Athena. This also shows how to define dependencies between resources.
