@@ -72,6 +72,28 @@ Portable IaC in the era of multi/hybrid cloud
 
 ---
 
+# State management
+
+* State is a persistent representation of the infrastructure
+* Default is a local file (see example 1)
+* **Problem**: Even if committed conflicts may arise if multiple Terraform runs are performed in parallel 
+* **Solution**: Use a remote state backend
+* Multiple backends supported (GCS, S3, Azure Storage, Terraform Cloud, etc.)
+* Using S3 backend in example 2
+  * S3 is 99.99% available
+  * supports server-side encryption using AES-256 and SSL-based communication
+  * supports versioning so rolling back is possible
+  * supports locking via DynamoDB
+
+---
+
+# Multi-env management
+
+**Problem:** variables not allowed in the backend block
+  * **Solution 1:** use partial configuration, i.e. move parameters to an env specific file recalled with `-backend-config <conf.hcl>`
+  * **Solution 2:** use workspaces (conceptually similar to git branching), each environment has a different managed state ending up in a different subfolder;
+---
+
 # Setup
 
 ---
