@@ -350,6 +350,8 @@ export AWS_SECRET_ACCESS_KEY=fake
 
 ### Invoke the lambda function
 
+To interact with the lambda function, you can use as usual the [aws CLI](https://github.com/aws/aws-cli), or the thin wrapper [awslocal](https://github.com/localstack/awscli-local) made to work with Localstack.
+
 ```
 aws lambda invoke --region eu-west-1 \
 --function-name myfirstlambda \
