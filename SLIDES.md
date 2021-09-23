@@ -120,7 +120,7 @@ Portable IaC in the era of multi/hybrid cloud
 2. Decide where to deploy
    1. AWS
       1. Sign up for AWS account: create non-root user and assign some policies  
-      2. Create a `credentials` file at `~/.aws` with a profile for the account created at 1. 
+      2. Create a `~/.aws/credentials` file with a new profile for the account created at 1 or export AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID
    2. [Localstack](https://github.com/localstack/localstack)
 
 ---
@@ -128,10 +128,9 @@ Portable IaC in the era of multi/hybrid cloud
 # Terraform project lifecycle
 
  1. `terraform init` to initialize the Terraform project
- 2. define a `~/.aws/credentials` file or export `AWS_SECRET_ACCESS_KEY` and `AWS_ACCESS_KEY_ID`
- 3. `terraform plan` to see changes to the infrastructure wrt the applied tf file
- 4. `terraform apply` to apply the changes to the infrastructure (or `terraform apply -auto-approve` to skip confirmation)
- 5. Once done `terraform destroy` to terminate all resources managed by the current configuration;
+ 2. `terraform plan` to see changes to the infrastructure wrt the applied tf file
+ 3. `terraform apply` to apply the changes to the infrastructure (or `terraform apply -auto-approve` to skip confirmation)
+ 4. Once done `terraform destroy` to terminate all resources managed by the current configuration;
 
 ---
 
