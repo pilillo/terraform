@@ -13,13 +13,8 @@ As a declarative language, Terraform has no control flow constructs such as for-
 
 ## Pre-requisites
  1. Sign up for an AWS account, create a new non-root user and assign some policies  
- 2. Create a `credentials` file at `~/.aws` with a profile for the account created at 1.  
+ 2. Create a `~/.aws/credentials` file with a new profile for the account created at 1 or export AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID 
  3. Install Terraform using a package manager or by downloading the binary from [here](https://www.terraform.io/downloads.html) or [here](https://github.com/hashicorp/terraform/releases)
- 4. `terraform init` to initialize the Terraform project
- 5. define a `~/.aws/credentials` file or export `AWS_SECRET_ACCESS_KEY` and `AWS_ACCESS_KEY_ID`
- 6. `terraform plan` to see changes to the infrastructure with respect to the applied tf file
- 7. `terraform apply` to apply the changes to the infrastructure (or `terraform apply -auto-approve` to skip confirmation)
- 8. Once done `terraform destroy` to terminate all resources managed by the current configuration;
 
 Do not forget, in case you already didn't, to ignore the state files:
 ```bash
@@ -28,6 +23,13 @@ Do not forget, in case you already didn't, to ignore the state files:
 *.tfstate.backup
 *.lock.hcl
 ```
+
+## Terraform lifecycle
+ 1. `terraform init` to initialize the Terraform project
+ 2. `terraform plan` to see changes to the infrastructure with respect to the applied tf file
+ 3. `terraform apply` to apply the changes to the infrastructure (or `terraform apply -auto-approve` to skip confirmation)
+ 4. Once done `terraform destroy` to terminate all resources managed by the current configuration;
+
 
 ## Test-1
 Example file, no changes to the infrastructure are to be applied.
